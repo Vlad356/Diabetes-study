@@ -1,0 +1,159 @@
+---
+title: "main_notebook"
+output: html_notebook
+---
+
+```{r}
+data <- read_csv("C:/Users/User/Downloads/diabetes_study/data/diabetic_data.csv")
+str(data, give.attr = FALSE)
+```
+
+
+кількість спост. кожної раси
+
+```{r}
+table(data$race)
+```
+кількість спост. кожного гендеру
+
+```{r}
+table(data$gender)
+```
+
+кількість спост. кожної вікової групи
+
+```{r}
+table(data$age)
+```
+
+Після перетворення змінних у фактори:
+```{r}
+str(data)
+
+```
+
+підраховуємо кількість пропущених значень в кожному стовпчику
+```{r}
+data %>% 
+  summarize(across(everything(), ~ sum(. == "?"))) %>% 
+  select(where(~ all(.) > 0))
+```
+
+частка пропущених значень в кожному стовпчику
+
+```{r}
+data %>%
+  summarize(across(everything(), ~ mean(. == "?") * 100)) %>%
+  select(where(~ . > 0))
+```
+
+графік середня кількість госпіталізацій за статтю
+
+```{r}
+data_gender_clean <- data %>% 
+  filter(!(gender %in% c("Unknown/Invalid", "Uknown/Invalid")))  
+
+data_summary_gender <- data_gender_clean %>%
+  group_by(gender) %>%
+  summarise(
+    avg_hosp = mean(number_inpatient, na.rm = TRUE),
+    count = n()
+  )
+
+ggplot(data_summary_gender, aes(x = gender, y = avg_hosp, fill = gender)) +
+  geom_col(alpha = 0.8) +
+  scale_x_discrete(labels = c("Female" = "жіноча", "Male" = "чоловіча")) +
+  labs(title = "Середня кількість госпіталізацій за статтю",
+       x = "Стать",
+       y = "Середня кількість госпіталізацій") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+
+
+графік відсоток спостережень за статтю 
+
+```{r}
+data_prop_gender <- data_gender_clean %>% 
+  count(gender) %>% 
+  mutate(percentage = n / sum(n) * 100)
+
+ggplot(data_prop_gender, aes(x = gender, y = percentage, fill = gender)) +
+  geom_col(alpha = 0.8) +
+  scale_x_discrete(labels = c("Female" = "жіноча", "Male" = "чоловіча")) +
+  labs(title = "Відсоток спостережень за статтю",
+       x = "Стать",
+       y = "Відсоток (%)") +
+  theme_minimal()+
+  theme(legend.position = "none")
+```
+
+QQPlot для кількості госпіталізацій за статтю
+
+```{r}
+ggplot(data_gender_clean, aes(sample = number_inpatient)) +
+  stat_qq() +
+  stat_qq_line() +
+  facet_wrap(~ gender) +
+  labs(title = "QQPlot для кількості госпіталізацій за статтю",
+       x = "Квантилі теоретичного розподілу",
+       y = "Квантилі вибірки") +
+  theme_minimal()
+```
+
+кількість пацієнтів чоловічої та жіночої статі у всьому датасеті
+
+```{r}
+data_clean <- data %>%
+  filter(!(gender %in% c("Unknown/Invalid", "Uknown/Invalid")))
+
+data_clean %>%
+  count(gender)
+```
+діаграма порівняння часток пацієнтів за статтю залежно від кількості госпіталізацій
+
+```{r}
+data_gender_clean %>%
+  group_by(gender, number_inpatient) %>%
+  summarise(count = n()) %>%
+  group_by(gender) %>%
+  mutate(prop = count / sum(count)) %>%
+  ggplot(aes(x = factor(number_inpatient), y = prop, fill = gender)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_discrete(name = "Стать пацієнта", 
+                      labels = c("Female" = "Жіноча", "Male" = "Чоловіча")) +
+  labs(title = "Порівняння часток за статтю",
+       x = "Кількість госпіталізацій", y = "Пропорція")
+
+```
+
+діаграма роподілу кількості госпіталізацій
+
+```{r}
+data_gender_clean %>%
+  group_by(number_inpatient, gender) %>%
+  summarise(count = n()) %>%
+  ggplot(aes(x = factor(number_inpatient), y = count, fill = gender)) +
+  geom_bar(stat = "identity") +
+  scale_fill_discrete(name = "Стать пацієнта", 
+                      labels = c("Female" = "Жіноча", "Male" = "Чоловіча")) +
+  labs(title = "Розподіл кількості госпіталізацій",
+       x = "Кількість госпіталізацій", y = "Кількість пацієнтів")
+
+```
+підрахунок коеєфіцєнту точково бісеріальної кореляції між гендером та кількістю госпіталізацій
+
+```{r}
+
+library(psych)
+
+correlation <- biserial(data_gender_clean$number_inpatient, 
+                        ifelse(data_gender_clean$gender == "Female", 1, 0))
+
+print(correlation)
+
+
+```
+

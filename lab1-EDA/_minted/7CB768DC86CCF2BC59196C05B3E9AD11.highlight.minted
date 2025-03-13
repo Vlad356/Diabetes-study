@@ -1,0 +1,11 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{bind\PYGZus{}rows}\PYG{p}{(}
+\PYG{+w}{  }\PYG{n}{mean}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{anscombe}\PYG{+w}{ }\PYG{o}{\PYGZpc{}\PYGZgt{}\PYGZpc{}}
+\PYG{+w}{         }\PYG{n+nf}{summarize}\PYG{p}{(}\PYG{n+nf}{across}\PYG{p}{(}\PYG{n+nf}{everything}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZti{}}\PYG{+w}{ }\PYG{n+nf}{mean}\PYG{p}{(}\PYG{n}{.}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{na.rm}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k+kc}{TRUE}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{  }\PYG{n}{sd}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{anscombe}\PYG{+w}{ }\PYG{o}{\PYGZpc{}\PYGZgt{}\PYGZpc{}}
+\PYG{+w}{       }\PYG{n+nf}{summarize}\PYG{p}{(}\PYG{n+nf}{across}\PYG{p}{(}\PYG{n+nf}{everything}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZti{}}\PYG{+w}{ }\PYG{n+nf}{sd}\PYG{p}{(}\PYG{n}{.}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{na.rm}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k+kc}{TRUE}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{  }\PYG{n}{median}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{anscombe}\PYG{+w}{ }\PYG{o}{\PYGZpc{}\PYGZgt{}\PYGZpc{}}
+\PYG{+w}{          }\PYG{n+nf}{summarize}\PYG{p}{(}\PYG{n+nf}{across}\PYG{p}{(}\PYG{n+nf}{everything}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZti{}}\PYG{+w}{ }\PYG{n+nf}{median}\PYG{p}{(}\PYG{n}{.}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{na.rm}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k+kc}{TRUE}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{  }\PYG{n}{.id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{statistic\PYGZdq{}}
+\PYG{p}{)}
+\end{MintedVerbatim}
