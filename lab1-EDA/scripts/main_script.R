@@ -1,6 +1,7 @@
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
+library(gridExtra)
 
 data <- read_csv("data/diabetic_data.csv")
 mapping_admission_source_id <- read_csv("data/mapping_admission_source_id.csv")
@@ -20,3 +21,5 @@ data$age <- factor(data$age,
 
 data <- data %>% 
   mutate(number_inpatient = as.numeric(as.character(number_inpatient)))
+
+

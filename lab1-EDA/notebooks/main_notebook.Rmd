@@ -8,6 +8,11 @@ data <- read_csv("C:/Users/User/Downloads/diabetes_study/data/diabetic_data.csv"
 str(data, give.attr = FALSE)
 ```
 
+```{r}
+table(data$number_inpatient)
+```
+
+
 
 кількість спост. кожної раси
 
@@ -154,6 +159,105 @@ correlation <- biserial(data_gender_clean$number_inpatient,
 
 print(correlation)
 
+
+```
+
+
+Чи впливає кількість встановлених діагнозів на тривалість госпіталізації?
+
+box plots відповідних змінних 
+
+
+```{r}
+ggplot(data = data, aes(y = time_in_hospital)) +
+  geom_boxplot(fill = "skyblue", color = "black", outlier.colour = "red") +
+  labs(
+    title = "Розподіл годин, проведених пацієнтами у лікарні",
+    y = "Години у лікарні"
+  ) +
+  theme_minimal()
+```
+
+
+```{r}
+ggplot(data = data, aes(y = number_diagnoses)) +
+  geom_boxplot(fill = "skyblue", color = "black", outlier.colour = "red") +
+  labs(
+    title = "Розподіл кількості встановлених діагнозів",
+    y = "Кількість діагнозів"
+  ) +
+  theme_minimal()
+```
+```{r}
+ggplot(data_gender_clean, aes(x = number_diagnoses, y = time_in_hospital)) +
+  geom_point(aes(color = gender), alpha = 0.6) +
+  facet_wrap(~ gender, labeller = as_labeller(c("Female" = "Жінки", "Male" = "Чоловіки"))) +
+  labs(title = "Тренд по категоріям (гендеру)",
+       x = "Кількість діагнозів",
+       y = "Час в лікарні") +
+  scale_color_discrete(name = "Стать пацієнта", 
+                       labels = c("Female" = "Жіноча", "Male" = "Чоловіча")) + 
+  theme_minimal()
+
+
+```
+кореляція спірмена
+
+
+```{r}
+cor.test(data$number_diagnoses, data$time_in_hospital, method = "spearman", exact = FALSE)
+
+```
+
+```{r}
+cor.test(data$number_diagnoses[data$gender == "Male"], 
+         data$time_in_hospital[data$gender == "Male"], 
+         method = "spearman", exact = FALSE)
+
+cor.test(data$number_diagnoses[data$gender == "Female"], 
+         data$time_in_hospital[data$gender == "Female"], 
+         method = "spearman", exact = FALSE)
+```
+
+
+
+Чи є відмінності в рівні смертності між різними віковими групами?
+
+
+```{r}
+data$status <- ifelse(data$discharge_disposition_id %in% c(11, 19, 20, 21), "Помер", "Вижив")
+
+# Побудова складеної стовпчастої діаграми
+ggplot(data, aes(x = age, fill = status)) +
+    geom_bar() +
+    labs(
+        title = "Рівень смертності у різних вікових групах",
+        x = "Вікові групи",
+        y = "Кількість пацієнтів",
+        fill = NULL
+    ) +
+    scale_fill_manual(values = c("Помер" = "red", "Вижив" = "green")) +
+    theme_minimal()
+```
+```{r}
+age_mapping <- c('[0-10)' = 5, '[10-20)' = 15, '[20-30)' = 25, 
+                  '[30-40)' = 35, '[40-50)' = 45, '[50-60)' = 55, 
+                  '[60-70)' = 65, '[70-80)' = 75, '[80-90)' = 85, 
+                  '[90-100)' = 95)
+data$age_bin <- as.numeric(recode(data$age, !!!age_mapping))
+
+# Построение Violin Plot
+ggplot(data, aes(x = data$status, y = age_bin, fill = data$status)) +
+  geom_violin(trim = FALSE) +
+  geom_boxplot(width = 0.1, color = "black", alpha = 0.3) +
+  labs(
+    title = "Смертність пацієнтів по віковим категоріям",
+    x = "Статус",
+    y = "Вік",
+    fill = NULL
+  ) +
+  scale_fill_manual(values = c("Помер" = "red", "Вижив" = "green"))+ 
+  theme_minimal()
 
 ```
 
