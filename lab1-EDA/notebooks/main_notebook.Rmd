@@ -4,7 +4,7 @@ output: html_notebook
 ---
 
 ```{r}
-data <- read_csv("C:/Users/User/Downloads/diabetes_study/data/diabetic_data.csv")
+data <- read_csv("E:/diabetes_study/diabetic_data.csv")
 str(data, give.attr = FALSE)
 ```
 <<<<<<< Updated upstream
