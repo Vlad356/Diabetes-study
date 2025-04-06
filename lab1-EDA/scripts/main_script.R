@@ -18,8 +18,14 @@ data$age <- factor(data$age,
                               "[80-90)", "[90-100)"),
                    ordered = TRUE)
 
+# Якщо є фактори, спершу перетворіть їх в символи
+
 
 data <- data %>% 
   mutate(number_inpatient = as.numeric(as.character(number_inpatient)))
 
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
