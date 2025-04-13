@@ -25,7 +25,16 @@ data <- data %>%
   mutate(number_inpatient = as.numeric(as.character(number_inpatient)))
 
 
-<<<<<<< Updated upstream
-=======
+data[data == "?"] <- NA
+# Заміна "?" на NA (так здається простіше працювати) + деякі описи в мапінгах мають значення not_mapped, null і тд. (при дослідженнях далі також такі параметри об'єднував в NA)
 
->>>>>>> Stashed changes
+# Переклад значень змінної race
+data <- data %>%
+  mutate(race = case_when(
+    is.na(race) | race == "Other" ~ "Інша",
+    race == "Caucasian" ~ "Європеоїдна",
+    race == "AfricanAmerican" ~ "Афроамериканська",
+    race == "Asian" ~ "Азіатська",
+    race == "Hispanic" ~ "Латиноамериканська",
+    TRUE ~ race
+  ))

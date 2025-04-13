@@ -4,7 +4,7 @@ output: html_notebook
 ---
 
 ```{r}
-data <- read_csv("E:/diabetes_study/diabetic_data.csv")
+data <- read_csv("C:/Users/User/Downloads/data_analitycs/Diabetes-study/lab1-EDA/data/diabetic_data.csv")
 str(data, give.attr = FALSE)
 ```
 <<<<<<< Updated upstream
@@ -14,11 +14,6 @@ table(data$number_inpatient)
 ```
 
 
-=======
-```{r}
-data[data == "?"] <- NA
-```
-// Заміна "?" на NA (так здається простіше працювати) + деякі описи в мапінгах мають значення not_mapped, null і тд. (при дослідженнях далі також такі параметри об'єднував в NA)//
 >>>>>>> Stashed changes
 
 кількість спост. кожної раси
@@ -216,6 +211,9 @@ ggplot(data_gender_clean, aes(x = number_diagnoses, y = time_in_hospital)) +
 
 ```{r}
 cor.test(data$number_diagnoses, data$time_in_hospital, method = "spearman", exact = FALSE)
+
+```
+
 =======
 Розподіл пацієнтів за віковими групами
 
@@ -233,7 +231,9 @@ ggplot(data, aes(x = age)) +
   )
 
 ```
+
 Висновок: 
+
 ```{r}
 ggplot(data, aes(x = age)) +
   geom_bar(fill = "steelblue", alpha = 0.7) +
@@ -261,16 +261,6 @@ ggplot(data, aes(x = age)) +
 
 
 ```{r}
-# Переклад значень змінної race
-data <- data %>%
-  mutate(race = case_when(
-    is.na(race) | race == "Other" ~ "Інша",
-    race == "Caucasian" ~ "Європеоїдна",
-    race == "AfricanAmerican" ~ "Афроамериканська",
-    race == "Asian" ~ "Азіатська",
-    race == "Hispanic" ~ "Латиноамериканська",
-    TRUE ~ race
-  ))
 
 # Побудова графіка
 ggplot(data, aes(x = race, y = time_in_hospital, fill = race)) +
@@ -286,12 +276,11 @@ ggplot(data, aes(x = race, y = time_in_hospital, fill = race)) +
     axis.ticks.x = element_blank(),
     legend.position = "right"  # Якщо потрібно відобразити легенду
   )
->>>>>>> Stashed changes
+
 
 ```
 
 ```{r}
-<<<<<<< Updated upstream
 cor.test(data$number_diagnoses[data$gender == "Male"], 
          data$time_in_hospital[data$gender == "Male"], 
          method = "spearman", exact = FALSE)
@@ -321,6 +310,7 @@ ggplot(data, aes(x = age, fill = status)) +
     scale_fill_manual(values = c("Помер" = "red", "Вижив" = "green")) +
     theme_minimal()
 ```
+
 ```{r}
 age_mapping <- c('[0-10)' = 5, '[10-20)' = 15, '[20-30)' = 25, 
                   '[30-40)' = 35, '[40-50)' = 45, '[50-60)' = 55, 
@@ -343,7 +333,7 @@ ggplot(data, aes(x = data$status, y = age_bin, fill = data$status)) +
 
 ```
 
-=======
+```{r}
 ggplot(data, aes(x = race, fill = race)) +
   geom_bar(alpha = 0.7) +
   
@@ -356,6 +346,8 @@ ggplot(data, aes(x = race, fill = race)) +
     axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
 
 ```
+
+
 ```{r}
 # Підрахуємо кількість людей за кожною расою та обчислимо відносну частку
 race_counts <- data %>%
@@ -365,7 +357,9 @@ race_counts <- data %>%
 
 # Виведемо результат
 print(race_counts)
+
 ```
+
 
 
 ```{r}
@@ -380,6 +374,7 @@ ggplot(data, aes(x = time_in_hospital, fill = race)) +
     axis.text.x = element_text(angle = 0, hjust = 1), legend.position = "none")
 
 ```
+
 Висновки. Незважаючи на домінування 2ох рас (в абсолютному показнику) загальна картина схожа (латиноамериканці та азійці мають дещо нижчі показники, але вони мають найменше випадків і більшу кількість викидів вгору (за такої ж тенденції при збільшені вибірки для цих рас картина матиме тендецію до загальної) + дивлячись на розподіл за щільністю підтверджуємо те, що якихось стастично значущих різниць немає)
 
 
@@ -495,7 +490,7 @@ ggplot(top_diagnoses, aes(x = reorder(diag_1, n), y = n, fill = diag_1)) +
   geom_col(alpha = 0.8) +
   coord_flip() +
   labs(title = "Топ-15 найпоширеніших первинних діагнозів",
-       x = "Діагноз",
+       x = "Діагноз (за ICD9)",
        y = "Кількість випадків") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),
@@ -633,3 +628,75 @@ ggplot(data, aes(x = admission_type_id, y = time_in_hospital, fill = admission_t
 
 
 >>>>>>> Stashed changes
+
+
+#  • Чи впливає кількість встановлених діагнозів 
+#    на ймовірність летального наслідку?
+#
+#   Нас цікавлять значення зі змінної discharge_disposition_id:
+#   11, Термін дії минув
+#   19, «Термін придатності закінчився вдома. Тільки Medicaid, хоспіс».
+#   20, «Термін придатності минув у медичному закладі. Лише Medicaid, хоспіс».
+#   21, «Термін дії закінчився, місце невідоме. Тільки Medicaid, хоспіс».
+# 
+#   Щільність 2d
+# 
+#   Здебільшого летальними наслідкам характерно не більше девяти діагнозів.
+#   Проте з графіку видно ,що у більшості людей не більше девяти діагнозів,
+#   а найчастіше саме девять діагнозів.
+#   
+#
+
+
+```{r}
+ggplot(data, aes(x = number_diagnoses, y = discharge_disposition_id)) + 
+  
+  geom_bin2d(binwidth = c(1, 1), origin = c(-1, -1)) +
+
+  scale_x_continuous(
+    breaks = 1:17,
+    labels = 1:17
+  ) +
+
+  scale_y_continuous(
+    breaks = 1:28,
+    labels = 1:28
+  ) +
+
+  geom_hline(
+    yintercept = c(10.5, 18.5, 19.5, 20.5), 
+    linetype = "dashed", 
+    color = "red", 
+    size = 1
+  ) +
+
+  labs(
+    x = "number_diagnoses – кількість діагнозів", 
+    y = "discharge_disposition_id – статус пацієнта після виписки"
+  ) +
+
+  scale_fill_gradient(name = "Частота") +
+
+  theme(
+    axis.title = element_text(size = 8),
+    axis.text = element_text(size = 6),
+    legend.text = element_text(size = 6),
+    legend.title = element_text(size = 8),
+    legend.key.size = unit(0.5, "cm")  # зменшено
+  )
+
+
+```
+```{r}
+data_filtered <- data %>% filter(discharge_disposition_id %in% c(11,19,20,21))   
+ggplot(data_filtered, aes(x=number_diagnoses)) + 
+  geom_bar(fill="blue") +
+  scale_x_continuous(breaks=1:30,minor_breaks=0.5) +
+  labs(
+    x = "number_diagnoses - Кількість діагнозів",
+    y = "Кількість пацієнтів зі статусом  виписки: 11, 19, 20, 21"
+  )
+
+print(data_filtered)
+```
+
